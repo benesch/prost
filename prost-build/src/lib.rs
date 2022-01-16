@@ -97,17 +97,8 @@
 //! PROTOC_INCLUDE=/usr/include
 //! ```
 //!
-//! If `PROTOC` is not found in the environment, then a pre-compiled `protoc` binary bundled in the
-//! prost-build crate is used. Pre-compiled `protoc` binaries exist for Linux (non-musl), macOS,
-//! and Windows systems. If no pre-compiled `protoc` is available for the host platform, then the
-//! `protoc` or `protoc.exe` binary on the `PATH` is used. If `protoc` is not available in any of
-//! these fallback locations, then the build fails.
-//!
-//! If `PROTOC_INCLUDE` is not found in the environment, then the Protobuf include directory
-//! bundled in the prost-build crate is be used.
-//!
-//! To force `prost-build` to use the `protoc` on the `PATH`, add `PROTOC=protoc` to the
-//! environment.
+//! If `PROTOC` is not found in the environment, then the `protoc` binary built by the
+//! `protobuf-src` crate is used.
 
 mod ast;
 mod code_generator;
@@ -1081,7 +1072,7 @@ pub fn compile_protos(protos: &[impl AsRef<Path>], includes: &[impl AsRef<Path>]
 pub fn protoc() -> PathBuf {
     match env::var_os("PROTOC") {
         Some(protoc) => PathBuf::from(protoc),
-        None => PathBuf::from(env!("PROTOC")),
+        None => protobuf_src::protoc(),
     }
 }
 
@@ -1089,7 +1080,7 @@ pub fn protoc() -> PathBuf {
 pub fn protoc_include() -> PathBuf {
     match env::var_os("PROTOC_INCLUDE") {
         Some(include) => PathBuf::from(include),
-        None => PathBuf::from(env!("PROTOC_INCLUDE")),
+        None => protobuf_src::include(),
     }
 }
 
